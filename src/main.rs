@@ -45,11 +45,7 @@ impl App {
                     .context("failed to spawn UDP ping thread")?;
                 eprintln!("UDP ping listening on {}", addr);
 
-                for n in 0.. {
-                    eprintln!("ping {}", n);
-                    ping_udp(&addr).context("failed to ping UDP")?;
-                    thread::sleep(Duration::from_secs(1));
-                }
+                ping_udp(&addr).context("failed to ping UDP")?;
             }
         }
 
@@ -132,7 +128,9 @@ fn spawn_udp_ping_thread(accept_pings: Option<usize>) -> Result<SocketAddr> {
 }
 
 fn ping_udp(addr: &SocketAddr) -> Result<()> {
-    let socket = UdpSocket::bind(addr).context("failed to connect")?;
+    // UDP is connectionless, so all we're doing here is creating a socket at some arbitrary
+    // address.
+    let socket = UdpSocket::bind("127.0.0.1:0").context("failed to connect")?;
 
     for n in 0.. {
         eprintln!("ping {}", n);
