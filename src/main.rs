@@ -95,10 +95,14 @@ fn ping_tcp(addr: &SocketAddr) -> Result<()> {
 
     for n in 0.. {
         eprintln!("ping {}", n);
-        stream.write_all(b"ping")?;
+        stream
+            .write_all(b"ping")
+            .context("failed to write to socket")?;
 
         let mut buf = [0; 1024];
-        stream.read(&mut buf)?;
+        stream
+            .read(&mut buf)
+            .context("failed to read from socket")?;
         thread::sleep(Duration::from_secs(1));
     }
     Ok(())
